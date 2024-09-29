@@ -28,7 +28,32 @@ scenarios = itertools.product(
 # Generate unique scenario identifiers
 scenario_ids = ['-'.join(scenario) for scenario in scenarios]
 
+# Add the bases cases
+scenarios = itertools.product(
+    ['DIESEL'],
+    truck_fleets,
+    haul_routes,
+)
+
+scenario_ids += ['-'.join(scenario) for scenario in scenarios]
+
 # Create a datafile with all scenario identifiers
 df = pd.DataFrame(scenario_ids, columns=['scenario_id'])
 
-print(len(df))
+headings = ['Battery', 'Trolley System', 'Trolley Segment', 'Recharge Level',
+            'Truck Fleet', 'Truck Type', 'Haul Route', 'Charging Method',
+            'Charging Bays']
+
+for heading in headings:
+    df[heading] = ''
+
+# Break up the identifiers into their components and add them to the DataFrame
+for ind, row in df.iterrows():
+    config = row['scenario_id'].split('-')
+    if config[0] == 'DIESEL':
+        break
+    for head_ind, heading in enumerate(headings):
+        print(heading)
+        df.at[ind, heading] = config[head_ind]
+
+df.to_excel('scenario_identifiers.xlsx', index=False)
